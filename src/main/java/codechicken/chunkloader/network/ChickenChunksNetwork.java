@@ -1,13 +1,12 @@
 package codechicken.chunkloader.network;
 
 import codechicken.chunkloader.api.ChunkLoaderShape;
-import codechicken.chunkloader.gui.GuiChunkLoader;
+import codechicken.chunkloader.client.ClientNetworkHandlers;
 import codechicken.chunkloader.tile.TileChunkLoader;
 import codechicken.chunkloader.tile.TileChunkLoaderBase;
 import codechicken.lib.packet.StreamNetworkChannel;
 import codechicken.lib.packet.StreamNetworkChannel.ClientPacketHandle;
 import codechicken.lib.packet.StreamNetworkChannel.ServerPacketHandle;
-import net.minecraft.client.Minecraft;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.ComponentSerialization;
@@ -25,20 +24,16 @@ public class ChickenChunksNetwork {
 
     public static final StreamNetworkChannel CHANNEL = new StreamNetworkChannel(MOD_ID);
 
-    public static final ClientPacketHandle OPEN_LOADER_GUI = CHANNEL.playToClient("open_loader", ChickenChunksNetwork::handleOpenLoaderGui);
+    // The GUI handlers live in client.ClientNetworkHandlers behind explicit lambdas, so a dedicated
+    // server never loads a Screen subclass (see that class's doc comment).
+    public static final ClientPacketHandle OPEN_LOADER_GUI = CHANNEL.playToClient("open_loader", (packet, ctx) -> ClientNetworkHandlers.handleOpenLoaderGui(packet, ctx));
     public static final ClientPacketHandle TILE_UPDATE = CHANNEL.playToClient("tile_update", ChickenChunksNetwork::handleTileUpdate);
-    public static final ClientPacketHandle ADD_GUI_WARNING = CHANNEL.playToClient("gui_warning", ChickenChunksNetwork::handleAddGuiWarning);
+    public static final ClientPacketHandle ADD_GUI_WARNING = CHANNEL.playToClient("gui_warning", (packet, ctx) -> ClientNetworkHandlers.handleAddGuiWarning(packet, ctx));
 
     public static final ServerPacketHandle SET_SHAPE = CHANNEL.playToServer("set_shape", ChickenChunksNetwork::handleSetShape);
 
     public static void init(IEventBus modBus, ModContainer container) {
         CHANNEL.init(modBus, container);
-    }
-
-    private static void handleOpenLoaderGui(RegistryFriendlyByteBuf packet, IPayloadContext ctx) {
-        if (ctx.player().level().getBlockEntity(packet.readBlockPos()) instanceof TileChunkLoader tile) {
-            Minecraft.getInstance().gui.setScreen(new GuiChunkLoader(tile));
-        }
     }
 
     public static void sendTileUpdate(TileChunkLoaderBase tile) {
@@ -60,12 +55,6 @@ public class ChickenChunksNetwork {
         var packet = ADD_GUI_WARNING.toClient(player);
         packet.cc$writeWithRegistryCodec(ComponentSerialization.STREAM_CODEC, component);
         packet.sendToPlayer(player);
-    }
-
-    private static void handleAddGuiWarning(RegistryFriendlyByteBuf packet, IPayloadContext ctx) {
-        if (Minecraft.getInstance().gui.screen() instanceof GuiChunkLoader gui) {
-            gui.addWarning(packet.cc$readWithRegistryCodec(ComponentSerialization.STREAM_CODEC));
-        }
     }
 
     public static void sendSetShape(TileChunkLoader tile, ChunkLoaderShape shape, int radius) {
