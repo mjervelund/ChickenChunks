@@ -35,7 +35,7 @@ public class ChunkTicket {
     public boolean addLoader(IChunkLoader loader) {
         boolean empty = loaders.isEmpty();
         if (loaders.add(loader)) {
-            ChunkLoaderHandler.CONTROLLER.forceChunk(level, loader.pos(), pos.x, pos.z, true, true);
+            ChunkLoaderHandler.CONTROLLER.forceChunk(level, loader.pos(), pos.x(), pos.z(), true, true);
         }
         return empty;
     }
@@ -48,7 +48,7 @@ public class ChunkTicket {
      */
     public boolean remLoader(IChunkLoader loader) {
         if (loaders.remove(loader)) {
-            ChunkLoaderHandler.CONTROLLER.forceChunk(level, loader.pos(), pos.x, pos.z, false, true);
+            ChunkLoaderHandler.CONTROLLER.forceChunk(level, loader.pos(), pos.x(), pos.z(), false, true);
         }
         return loaders.isEmpty();
     }

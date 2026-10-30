@@ -22,7 +22,7 @@ import net.minecraft.client.renderer.blockentity.state.BlockEntityRenderState;
 import net.minecraft.client.renderer.feature.ModelFeatureRenderer;
 import net.minecraft.client.renderer.rendertype.RenderSetup;
 import net.minecraft.client.renderer.rendertype.RenderType;
-import net.minecraft.client.renderer.state.CameraRenderState;
+import net.minecraft.client.renderer.state.level.CameraRenderState;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.level.ChunkPos;
@@ -178,8 +178,8 @@ public class TileChunkLoaderRenderer implements BlockEntityRenderer<TileChunkLoa
         };
 
         for (ChunkPos pair : chunkSet) {
-            int chunkBlockX = pair.x << 4;
-            int chunkBlockZ = pair.z << 4;
+            int chunkBlockX = pair.x() << 4;
+            int chunkBlockZ = pair.z() << 4;
             for (int side = 0; side < 4; side++) {
                 int[] offset1 = coords[side];
                 int[] offset2 = coords[(side + 1) % 4];

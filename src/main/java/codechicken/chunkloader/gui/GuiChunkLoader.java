@@ -3,7 +3,7 @@ package codechicken.chunkloader.gui;
 import codechicken.chunkloader.api.ChunkLoaderShape;
 import codechicken.chunkloader.network.ChickenChunksNetwork;
 import codechicken.chunkloader.tile.TileChunkLoader;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.input.MouseButtonEvent;
@@ -77,15 +77,14 @@ public class GuiChunkLoader extends Screen {
         assert minecraft.level != null;
 
         if (minecraft.level.getBlockEntity(tile.getBlockPos()) != tile) { //tile changed
-            minecraft.screen = null;
-            minecraft.mouseHandler.grabMouse();
+            minecraft.gui.setScreen(null);
         }
         updateNames();
         super.tick();
     }
 
     @Override
-    protected void renderMenuBackground(GuiGraphics graphics) {
+    protected void extractMenuBackground(GuiGraphicsExtractor graphics) {
         Identifier texture = Identifier.fromNamespaceAndPath(MOD_ID, "textures/gui/gui_small.png");
         int posx = width / 2 - 88;
         int posy = height / 2 - 83;
@@ -93,8 +92,8 @@ public class GuiChunkLoader extends Screen {
     }
 
     @Override
-    public void render(GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
-        super.render(graphics, mouseX, mouseY, partialTicks);//buttons
+    public void extractRenderState(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTicks) {
+        super.extractRenderState(graphics, mouseX, mouseY, partialTicks);//buttons
         drawCentered(graphics, Component.translatable("chickenchunks.gui.name"), width / 2 - 40, height / 2 - 74, 0xFF303030);
         if (tile.owner != null) {
             assert tile.ownerName != null;
@@ -118,8 +117,8 @@ public class GuiChunkLoader extends Screen {
         }
     }
 
-    private void drawCentered(GuiGraphics graphics, Component s, int x, int y, int colour) {
-        graphics.drawString(font, s.getVisualOrderText(), x - font.width(s) / 2, y, colour, false);
+    private void drawCentered(GuiGraphicsExtractor graphics, Component s, int x, int y, int colour) {
+        graphics.text(font, s.getVisualOrderText(), x - font.width(s) / 2, y, colour, false);
     }
 
     @Override

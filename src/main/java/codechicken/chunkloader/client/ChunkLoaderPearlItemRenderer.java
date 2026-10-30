@@ -16,7 +16,6 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.client.renderer.special.NoDataSpecialModelRenderer;
 import net.minecraft.client.renderer.special.SpecialModelRenderer;
-import net.minecraft.world.item.ItemDisplayContext;
 import org.joml.Vector3fc;
 
 import java.util.function.Consumer;
@@ -38,7 +37,7 @@ public record ChunkLoaderPearlItemRenderer(double height, double size) implement
     }
 
     @Override
-    public void submit(ItemDisplayContext displayContext, PoseStack pose, SubmitNodeCollector collector, int packedLight, int packedOverlay, boolean hasFoil, int outlineColor) {
+    public void submit(PoseStack pose, SubmitNodeCollector collector, int packedLight, int packedOverlay, boolean hasFoil, int outlineColor) {
         collector.cc$submitCCRS(pose, TileChunkLoaderRenderer.pearlType, (mat, ccrs) -> {
             double rot = ClientUtils.getRenderTime() / 6F;
             ccrs.brightness = 15728880;
@@ -51,7 +50,7 @@ public record ChunkLoaderPearlItemRenderer(double height, double size) implement
         });
     }
 
-    public record Unbaked(double height, double size) implements SpecialModelRenderer.Unbaked {
+    public record Unbaked(double height, double size) implements NoDataSpecialModelRenderer.Unbaked {
 
         public static final MapCodec<Unbaked> MAP_CODEC = RecordCodecBuilder.mapCodec(builder -> builder.group(
                         Codec.DOUBLE.fieldOf("height").forGetter(Unbaked::height),
@@ -60,12 +59,12 @@ public record ChunkLoaderPearlItemRenderer(double height, double size) implement
         );
 
         @Override
-        public SpecialModelRenderer<?> bake(SpecialModelRenderer.BakingContext context) {
+        public NoDataSpecialModelRenderer bake(SpecialModelRenderer.BakingContext context) {
             return new ChunkLoaderPearlItemRenderer(height, size);
         }
 
         @Override
-        public MapCodec<? extends SpecialModelRenderer.Unbaked> type() {
+        public MapCodec<? extends NoDataSpecialModelRenderer.Unbaked> type() {
             return MAP_CODEC;
         }
 

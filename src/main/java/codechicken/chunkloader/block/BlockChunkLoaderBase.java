@@ -23,7 +23,7 @@ public abstract class BlockChunkLoaderBase extends BaseEntityBlock {
     }
 
     @Override
-    public boolean canConnectRedstone(BlockState state, BlockGetter world, BlockPos pos, @Nullable Direction side) {
+    public boolean shouldRedstoneWireConnectTo(BlockState state, BlockGetter world, BlockPos pos, @Nullable Direction side) {
         return true;
     }
 
@@ -42,8 +42,4 @@ public abstract class BlockChunkLoaderBase extends BaseEntityBlock {
         return RenderShape.MODEL;
     }
 
-    @Override
-    protected MapCodec<? extends BaseEntityBlock> codec() {
-        throw new UnsupportedOperationException();
-    }
 }

@@ -10,8 +10,10 @@ import net.minecraft.client.data.models.ModelProvider;
 import net.minecraft.client.data.models.model.ItemModelUtils;
 import net.minecraft.client.data.models.model.ModelLocationUtils;
 import net.minecraft.core.HolderLookup;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.data.PackOutput;
 import net.minecraft.data.loot.LootTableProvider;
+import net.minecraft.data.loot.LootTableSubProvider;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParamSets;
 import net.neoforged.bus.api.IEventBus;
@@ -19,6 +21,7 @@ import net.neoforged.fml.loading.FMLEnvironment;
 import net.neoforged.neoforge.common.Tags;
 import net.neoforged.neoforge.common.data.BlockTagsProvider;
 import net.neoforged.neoforge.data.event.GatherDataEvent;
+import net.neoforged.neoforge.data.event.GatherDataRegistryEntriesEvent;
 
 import java.util.List;
 import java.util.Set;
@@ -39,37 +42,39 @@ public class DataGenerators {
 
         if (FMLEnvironment.getDist().isClient()) {
             modBus.addListener(DataGenerators::gatherDataGenerators);
+            modBus.addListener(DataGenerators::gatherDataRegistryEntries);
         }
     }
 
     private static void gatherDataGenerators(GatherDataEvent.Client event) {
-        event.createProvider(LootTables::new);
         event.createProvider(BlockTags::new);
         event.createProvider(Recipes::new);
         event.createProvider(Models::new);
     }
 
+    private static void gatherDataRegistryEntries(GatherDataRegistryEntriesEvent event) {
+        event.add(Registries.LOOT_TABLE, new LootTables());
+    }
+
     private static class LootTables extends LootTableProvider {
 
-        public LootTables(PackOutput output, CompletableFuture<HolderLookup.Provider> lookupProvider) {
+        public LootTables() {
             super(
-                    output,
                     Set.of(),
                     List.of(
                             new SubProviderEntry(BlockLoot::new, LootContextParamSets.BLOCK)
-                    ),
-                    lookupProvider
+                    )
             );
         }
     }
 
     private static class BlockLoot extends NoValidationBLockLootSubProvider {
 
-        public BlockLoot(HolderLookup.Provider registries) {
+        public BlockLoot(LootTableSubProvider.Context context) {
             super(Set.of(
                     CHUNK_LOADER_ITEM.get(),
                     SPOT_LOADER_ITEM.get()
-            ), registries);
+            ), context);
         }
 
         @Override
@@ -88,8 +93,8 @@ public class DataGenerators {
         @Override
         protected void addTags(HolderLookup.Provider provider) {
             tag(net.minecraft.tags.BlockTags.MINEABLE_WITH_PICKAXE)
-                    .add(CHUNK_LOADER_BLOCK.get())
-                    .add(SPOT_LOADER_BLOCK.get());
+                    .add(CHUNK_LOADER_BLOCK.get().builtInRegistryHolder().key())
+                    .add(SPOT_LOADER_BLOCK.get().builtInRegistryHolder().key());
         }
     }
 

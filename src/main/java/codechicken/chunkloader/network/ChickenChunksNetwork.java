@@ -37,7 +37,7 @@ public class ChickenChunksNetwork {
 
     private static void handleOpenLoaderGui(RegistryFriendlyByteBuf packet, IPayloadContext ctx) {
         if (ctx.player().level().getBlockEntity(packet.readBlockPos()) instanceof TileChunkLoader tile) {
-            Minecraft.getInstance().setScreen(new GuiChunkLoader(tile));
+            Minecraft.getInstance().gui.setScreen(new GuiChunkLoader(tile));
         }
     }
 
@@ -63,7 +63,7 @@ public class ChickenChunksNetwork {
     }
 
     private static void handleAddGuiWarning(RegistryFriendlyByteBuf packet, IPayloadContext ctx) {
-        if (Minecraft.getInstance().screen instanceof GuiChunkLoader gui) {
+        if (Minecraft.getInstance().gui.screen() instanceof GuiChunkLoader gui) {
             gui.addWarning(packet.cc$readWithRegistryCodec(ComponentSerialization.STREAM_CODEC));
         }
     }

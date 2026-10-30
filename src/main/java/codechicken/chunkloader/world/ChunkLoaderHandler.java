@@ -61,11 +61,13 @@ public class ChunkLoaderHandler extends SavedData implements IChunkLoaderHandler
             }
     );
 
+    // On 26.3 the saved-data id is an Identifier resolved to data/<namespace>/<path>.dat
+    // (it was data/chickenchunks.dat before); old worlds are not migrated.
     private static final SavedDataType<ChunkLoaderHandler> TYPE = new SavedDataType<>(
-            MOD_ID,
-            ctx -> new ChunkLoaderHandler(ctx.getServer()),
-            ctx -> CompoundTag.CODEC.flatXmap(tag -> {
-                var server = ctx.getServer();
+            Identifier.fromNamespaceAndPath(MOD_ID, MOD_ID),
+            level -> new ChunkLoaderHandler(Objects.requireNonNull(level).getServer()),
+            level -> CompoundTag.CODEC.flatXmap(tag -> {
+                var server = Objects.requireNonNull(level).getServer();
                 var handler = new ChunkLoaderHandler(server);
                 var reporter = new ProblemReporter.Collector();
                 handler.load(TagValueInput.create(reporter, server.registryAccess(), tag));
