@@ -1,6 +1,5 @@
 {
   "type": "minecraft:crafting_shaped",
-  "category": "misc",
   "key": {
     "C": "chickenchunks:chunk_loader",
     "P": "#c:ender_pearls"
@@ -11,7 +10,6 @@
     "PPP"
   ],
   "result": {
-    "count": 1,
     "id": "chickenchunks:spot_loader"
   }
 }
