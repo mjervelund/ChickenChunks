@@ -178,6 +178,7 @@ public abstract class TileChunkLoaderBase extends BlockEntity implements IChunkL
         boolean nowPowered = isPowered();
         if (powered != nowPowered) {
             powered = nowPowered;
+            setChanged();
             if (powered) {
                 deactivate();
             } else {
