@@ -333,7 +333,7 @@ public class ChunkLoaderHandler extends SavedData implements IChunkLoaderHandler
             for (var dimTag : dimensions) {
                 var dim = dimTag.read("dimension", Identifier.CODEC).orElseThrow();
                 Organiser organiser = new Organiser(this, dim, player);
-                organiser.load(input.childOrEmpty("organiser"));
+                organiser.load(dimTag.childOrEmpty("organiser"));
                 playerOrganisers.put(player, dim, organiser);
             }
         }
