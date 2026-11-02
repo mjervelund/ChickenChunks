@@ -3,6 +3,7 @@ package codechicken.chunkloader.gui;
 import codechicken.chunkloader.api.ChunkLoaderShape;
 import codechicken.chunkloader.network.ChickenChunksNetwork;
 import codechicken.chunkloader.tile.TileChunkLoader;
+import com.mojang.blaze3d.platform.InputConstants;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.Screen;
@@ -44,7 +45,7 @@ public class GuiChunkLoader extends Screen {
         // TODO we can use a custom Button instance here which allows both left and right-clicks, the action can consume the 'was left/right'
         //      We can then nuke the lastButton and flipping in the onClicked method.
         addRenderableWidget(shapeButton = Button.builder(Component.literal("-"), e -> {
-            ChunkLoaderShape shape = lastButton == 1 ? tile.shape.prev() : tile.shape.next();
+            ChunkLoaderShape shape = lastButton == InputConstants.MOUSE_BUTTON_RIGHT ? tile.shape.prev() : tile.shape.next();
             ChickenChunksNetwork.sendSetShape(tile, shape, tile.radius);
         }).bounds(width / 2 + 7, height / 2 - 37, 75, 20).build());
         updateNames();
@@ -125,10 +126,11 @@ public class GuiChunkLoader extends Screen {
     public boolean mouseClicked(MouseButtonEvent event, boolean isDouble) {
         // Store the last _real_ button click.
         lastButton = event.button();
-        if (event.button() == 1) {
+        // 26.3 numbers mouse buttons like SDL (left = 1, right = 3); widgets only accept MOUSE_BUTTON_LEFT.
+        if (event.button() == InputConstants.MOUSE_BUTTON_RIGHT) {
             // Flip right-click to a left-click.
             // This ensures that left and right click activates the buttons.
-            event = new MouseButtonEvent(event.x(), event.y(), new MouseButtonInfo(0, event.modifiers()));
+            event = new MouseButtonEvent(event.x(), event.y(), new MouseButtonInfo(InputConstants.MOUSE_BUTTON_LEFT, event.modifiers()));
         }
         return super.mouseClicked(event, isDouble);
     }
