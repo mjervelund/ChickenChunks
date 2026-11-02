@@ -88,6 +88,13 @@ public class Organiser {
     }
 
     public void forceChunks(IChunkLoader loader, Set<ChunkPos> chunks) {
+        // A chunk this loader is still waiting to release (unforceChunks queues it for 100 ticks) is wanted
+        // again: cancel the release, or the timed unload would drop its ticket after we re-added it.
+        Object2IntMap<ChunkPos> unloadQueue = timedUnloadQueue.get(loader);
+        if (unloadQueue != null) {
+            chunks.forEach(unloadQueue::removeInt);
+            if (unloadQueue.isEmpty()) timedUnloadQueue.remove(loader);
+        }
         for (ChunkPos chunk : chunks) {
             handler.addChunk(loader, dim, chunk);
             List<IChunkLoader> loaders = forcedChunksByChunk.computeIfAbsent(chunk, e -> new LinkedList<>());
@@ -95,7 +102,9 @@ public class Organiser {
                 loaders.add(loader);
             }
         }
-        forcedChunksByLoader.put(loader, chunks);
+        // updateLoader passes only the newly added chunks: merge them into what this loader already holds,
+        // never replace it (replacing forgot the kept chunks, so later radius/shape changes lost tickets).
+        forcedChunksByLoader.computeIfAbsent(loader, e -> new HashSet<>()).addAll(chunks);
     }
 
     public void unforceChunks(IChunkLoader loader, Set<ChunkPos> chunks, boolean remLoader) {
