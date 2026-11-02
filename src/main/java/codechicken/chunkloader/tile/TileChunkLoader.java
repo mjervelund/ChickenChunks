@@ -56,6 +56,7 @@ public class TileChunkLoader extends TileChunkLoaderBase {
         if (powered) {
             radius = newRadius;
             shape = newShape;
+            setChanged(); // persist the new radius/shape (sendBlockUpdated does not mark the chunk for saving)
             BlockState state = level.getBlockState(getBlockPos());
             level.sendBlockUpdated(getBlockPos(), state, state, 3);
             ChickenChunksNetwork.sendTileUpdate(this);
@@ -66,6 +67,7 @@ public class TileChunkLoader extends TileChunkLoaderBase {
             radius = newRadius;
             shape = newShape;
             handler.updateLoader(this);
+            setChanged(); // persist the new radius/shape (sendBlockUpdated does not mark the chunk for saving)
             BlockState state = level.getBlockState(getBlockPos());
             level.sendBlockUpdated(getBlockPos(), state, state, 3);
             ChickenChunksNetwork.sendTileUpdate(this);
