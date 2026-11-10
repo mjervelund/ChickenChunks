@@ -36,7 +36,6 @@ import java.util.Collection;
 import java.util.Set;
 
 import static codechicken.chunkloader.ChickenChunks.MOD_ID;
-import static java.util.Objects.requireNonNull;
 
 public class TileChunkLoaderRenderer implements BlockEntityRenderer<TileChunkLoaderBase, TileChunkLoaderRenderer.RenderState> {
 
@@ -76,7 +75,7 @@ public class TileChunkLoaderRenderer implements BlockEntityRenderer<TileChunkLoa
             return;
         }
 
-        var renderInfo = requireNonNull(tile.renderInfo);
+        var renderInfo = tile.getRenderInfo();
         state.activeAnim = (renderInfo.activationCounter) / 20D;
         if (state.active && renderInfo.activationCounter < 20) {
             state.activeAnim += partialTick / 20D;
