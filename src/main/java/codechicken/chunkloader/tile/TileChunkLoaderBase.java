@@ -188,8 +188,18 @@ public abstract class TileChunkLoaderBase extends BlockEntity implements IChunkL
     }
 
     public void tickClient() {
-        assert renderInfo != null;
-        renderInfo.update(this);
+        getRenderInfo().update(this);
+    }
+
+    /**
+     * The client render state, created on first use when this tile never went through {@link #clearRemoved()} on a
+     * client level (e.g. ticked or rendered by another mod's preview level).
+     */
+    public RenderInfo getRenderInfo() {
+        if (renderInfo == null) {
+            renderInfo = new RenderInfo();
+        }
+        return renderInfo;
     }
 
     @Override

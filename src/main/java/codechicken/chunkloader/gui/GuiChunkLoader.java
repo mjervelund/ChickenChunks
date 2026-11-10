@@ -41,7 +41,7 @@ public class GuiChunkLoader extends Screen {
     public void init() {
         addRenderableWidget(Button.builder(Component.literal("+"), e -> ChickenChunksNetwork.sendSetShape(tile, tile.shape, tile.radius + 1)).bounds(width / 2 - 20, height / 2 - 45, 20, 20).build());
         addRenderableWidget(Button.builder(Component.literal("-"), e -> ChickenChunksNetwork.sendSetShape(tile, tile.shape, tile.radius - 1)).bounds(width / 2 - 80, height / 2 - 45, 20, 20).build());
-        addRenderableWidget(laserButton = Button.builder(Component.literal("-"), e -> tile.renderInfo.showLasers = !tile.renderInfo.showLasers).bounds(width / 2 + 7, height / 2 - 60, 75, 20).build());
+        addRenderableWidget(laserButton = Button.builder(Component.literal("-"), e -> tile.getRenderInfo().showLasers = !tile.getRenderInfo().showLasers).bounds(width / 2 + 7, height / 2 - 60, 75, 20).build());
         // TODO we can use a custom Button instance here which allows both left and right-clicks, the action can consume the 'was left/right'
         //      We can then nuke the lastButton and flipping in the onClicked method.
         addRenderableWidget(shapeButton = Button.builder(Component.literal("-"), e -> {
@@ -56,8 +56,7 @@ public class GuiChunkLoader extends Screen {
     public void updateNames() {
         assert laserButton != null;
         assert shapeButton != null;
-        assert tile.renderInfo != null;
-        laserButton.setMessage(Component.translatable(tile.renderInfo.showLasers ? "chickenchunks.gui.hidelasers" : "chickenchunks.gui.showlasers"));
+        laserButton.setMessage(Component.translatable(tile.getRenderInfo().showLasers ? "chickenchunks.gui.hidelasers" : "chickenchunks.gui.showlasers"));
         shapeButton.setMessage(tile.shape.getTranslation());
         if (lastRadius != tile.radius || lastShape != tile.shape) {
             warningEnd = -1;
